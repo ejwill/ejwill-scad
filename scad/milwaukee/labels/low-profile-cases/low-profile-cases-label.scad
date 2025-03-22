@@ -1,6 +1,6 @@
 /************** Low-Profile Milwaukee Packout Case Handle Labels *******************
 *
-* Updated By ejwill https://github.com/ejwill/milwaukee-scad
+* Updated By ejwill https://github.com/ejwill/ejwill-scad
 * 
 * Description:
 * This is a customizable label for the Milwaukee Packout Low-Profile Handle.

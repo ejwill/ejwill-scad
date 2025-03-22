@@ -1,6 +1,6 @@
 # Low Profile Milkwaukee Packout Case Labels <!-- omit from toc -->
 
-This OpenSCAD file generates customizable labels for Milwaukee Packout Low-Profile Handles. The labels can be customized with text, font, color, and size. They can be embedded into the handle or printed on the face.
+This OpenSCAD file generates customizable labels for Milwaukee Packout Low-Profile and Compact Low-Profile Handles. The labels can be customized with text, font, color, and size. They can be engraved into the handle or printed on the face.
 
 - [Features](#features)
 - [Compatible Organizers](#compatible-organizers)
@@ -14,9 +14,8 @@ This OpenSCAD file generates customizable labels for Milwaukee Packout Low-Profi
 
 - **Customizable Handle Geometry**: Adjust the handle's length, width, and height to fit different organizer types.
 - **Rounded Edges**: Smooth, rounded edges for a polished look.
-- **Customizable Catches**: Modify the size, position, and tightness of the catches.
-- **Arch Cutouts**: Option to create arch-shaped cutouts for advanced designs.
-- **Text Embedding**: Embed text into the handle or print it on the surface.
+- **Text Engraving**: Engrave text into the handle or print it on the surface.
+  - Engraving can be the same or different color for  
 - **BOSL2 Integration**: Uses the BOSL2 library for advanced geometry operations.
 
 ## Compatible Organizers
@@ -40,7 +39,7 @@ The following options can be customized in the OpenSCAD file:
 - **Font Thickness**: Set the thickness of the label text.
 - **Label Color**: Set the color of the label text.
 - **Length Adjust**: Adjust the length of the label by percentage (e.g., 1 = 100%).
-- **Embed Text**: Option to embed the text into the handle or print it on the face.
+- **Engrave Text**: Option to embed the text into the handle or print it on the face.
 
 ## Updates
 
