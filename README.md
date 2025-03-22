@@ -1,9 +1,10 @@
-# Milwaukee OpenSCAD
+# Ejwill OpenSCAD
 
-OpenScad for Milwaukee Tools.
+Repo for my OpenScad designs
 
-## OpenScads
+## Milwaukee
 
 ### Labels
 
 - [Low Profile Packout Case Labels](./scad/labels/low-profile-cases-label.scad)
+- [Compact Low Profile Packout Case Labels](./scad/labels/low-profile-cases-label.scad)
