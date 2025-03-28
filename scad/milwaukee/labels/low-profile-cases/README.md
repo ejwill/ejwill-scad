@@ -39,7 +39,7 @@ The following options can be customized in the OpenSCAD file:
 - **Font Thickness**: Set the thickness of the label text.
 - **Label Color**: Set the color of the label text.
 - **Length Adjust**: Adjust the length of the label by percentage (e.g., 1 = 100%).
-- **Engrave Text**: Option to embed the text into the handle or print it on the face.
+- **Text Style**: Raised, Engraved, or Flush
 
 ## Updates
 

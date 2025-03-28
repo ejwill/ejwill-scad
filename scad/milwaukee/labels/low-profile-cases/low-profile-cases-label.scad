@@ -19,11 +19,14 @@
 * - Updated for use on MakerWorld
 * - Added option to print on face
 * - Updated to OpenScad 2024.12.11
+* - Added option to match label color to handle color
+* - v1.1.0
+* - Added flush text option
 *
 * Licesnse: Creative Commons - Attribution - Share Alike
 *           https://creativecommons.org/licenses/by-sa/4.0/
 *
-* Version: 1.0.0
+* Version: 1.1.0
 *******************************************************************************/
 
 include <BOSL2/std.scad>
@@ -140,62 +143,37 @@ module handle() {
             translate(INVERT_X * CATCH_CUT_POS)
             rotate([90,0,0])
             cylinder(d = adj_catch_dia,h = handle_width+$dl,$fn=20,center = true);
-
-            // if(text_style == "flush"){
-            //     translate([0, 0, handle_thickness - font_thickness])
-            //     offset(r=0.01)
-            //     linear_extrude(height = font_thickness) {
-            //         text(text = label, font = str(font_style, ":", font_bold ? "bold" : "normal"), size = font_size, valign = "center", halign = "center");
-            //     }
-            // }
         }
 
-        label(font_thickness, font_bold, adj_label_color, engraved_text, text_style);
-
-        if(text_style == "flush"){
-            translate([0, 0, handle_thickness - 0.4])
-            linear_extrude(height = 0.4) {
-                offset(r=0.01)
-                text(text = label, font = str(font_style, ":", font_bold ? "bold" : "normal"), size = font_size, valign = "center", halign = "center");
-            }
+        //if flush text cut out the text. Will be filling in with colored text later
+        if (text_style == "flush") {
+            label(0.6, font_bold, adj_label_color, "engraved", 0.01);
+        } else if (text_style == "engraved") {
+            label(font_thickness, font_bold, adj_label_color, text_style);
         }
     }
 
-    // Add the colored text fill
+    // Add the colored text to fill in the engraved text for flush style
     if (text_style == "flush") {
-        color(adj_label_color) {
-            translate([0, 0, handle_thickness - 0.4])
-            linear_extrude(height = 0.4) {
-                // offset(r=0.01)
-                text(text = label, font = str(font_style, ":", font_bold ? "bold" : "normal"), size = font_size, valign = "center", halign = "center");
-            }
-        }
+        label(0.6, font_bold, adj_label_color, "flush");
     }
 }
 
-module label(font_thickness = 0.6, bold = true, labelColor = "white", engraved = false, text_style = "raised"){
-    translate(text_style == "engraved" ? [0, 0, handle_thickness - font_thickness] : 
-              text_style == "flush" ? [0, 0, handle_thickness - font_thickness] : 
-              [0, 0, handle_thickness]){
-        color(labelColor){
-            linear_extrude(height = font_thickness){
-                // offset(r=0.01)
-                text(text = label, font = str(font_style, ":", bold ? "bold" : "normal"), size = font_size, valign = "center", halign = "center");
-            };
-        }
+module label(font_thickness = 0.6, bold = true, labelColor = "white", text_style = "raised", offsetR = 0){
+    color(labelColor){
+        translate(text_style == "engraved" ? [0, 0, handle_thickness - font_thickness] : 
+                text_style == "flush" ? [0, 0, handle_thickness - font_thickness] : 
+                [0, 0, handle_thickness])
+        linear_extrude(height = font_thickness){
+            offset(r=offsetR)
+            text(text = label, font = str(font_style, ":", bold ? "bold" : "normal"), size = font_size, valign = "center", halign = "center");
+        };
     }
 }
-
-// if(engraved_text){
-//     handle();
-// } else {
-//     handle();
-//     label(font_thickness, font_bold, adj_label_color, engraved_text);
-// }
 
 if(text_style == "engraved" || text_style == "flush"){
     handle();
 } else {
     handle();
-    label(font_thickness, font_bold, adj_label_color, engraved_text,text_style);
+    label(font_thickness, font_bold, adj_label_color, text_style);
 }
