@@ -19,11 +19,14 @@
 * - Updated for use on MakerWorld
 * - Added option to print on face
 * - Updated to OpenScad 2024.12.11
+* - Added option to match label color to handle color
+* - v1.1.0
+* - Added flush text option
 *
 * Licesnse: Creative Commons - Attribution - Share Alike
 *           https://creativecommons.org/licenses/by-sa/4.0/
 *
-* Version: 1.0.0
+* Version: 1.1.0
 *******************************************************************************/
 
 include <BOSL2/std.scad>
@@ -87,6 +90,7 @@ handle_length_adjust = 1; //[0.95:0.001:1.05]
 
 //Option to engraved the text into the handle
 engraved_text = false; //[false, true]
+text_style = "raised"; // [raised, engraved, flush]
 
 /*[Hidden]*/
 // Calculations
@@ -141,23 +145,35 @@ module handle() {
             cylinder(d = adj_catch_dia,h = handle_width+$dl,$fn=20,center = true);
         }
 
-        label(font_thickness, font_bold, adj_label_color, engraved_text);
-    }
-}
-
-module label(font_thickness = 0.6, bold = true, labelColor = "white", engraved = false){
-    translate(engraved ? [0,0,handle_thickness- font_thickness] : [0,0,handle_thickness]){
-        color(labelColor){
-            linear_extrude(height = font_thickness){
-                text(text = label, font = str(font_style, ":", bold ? "bold" : "normal"), size = font_size, valign = "center", halign = "center");
-            };
+        //if flush text cut out the text. Will be filling in with colored text later
+        if (text_style == "flush") {
+            label(0.6, font_bold, adj_label_color, "engraved", 0.01);
+        } else if (text_style == "engraved") {
+            label(font_thickness, font_bold, adj_label_color, text_style);
         }
     }
+
+    // Add the colored text to fill in the engraved text for flush style
+    if (text_style == "flush") {
+        label(0.6, font_bold, adj_label_color, "flush");
+    }
 }
 
-if(engraved_text){
+module label(font_thickness = 0.6, bold = true, labelColor = "white", text_style = "raised", offsetR = 0){
+    color(labelColor){
+        translate(text_style == "engraved" ? [0, 0, handle_thickness - font_thickness] : 
+                text_style == "flush" ? [0, 0, handle_thickness - font_thickness] : 
+                [0, 0, handle_thickness])
+        linear_extrude(height = font_thickness){
+            offset(r=offsetR)
+            text(text = label, font = str(font_style, ":", bold ? "bold" : "normal"), size = font_size, valign = "center", halign = "center");
+        };
+    }
+}
+
+if(text_style == "engraved" || text_style == "flush"){
     handle();
 } else {
     handle();
-    label(font_thickness, font_bold, adj_label_color, engraved_text);
+    label(font_thickness, font_bold, adj_label_color, text_style);
 }
