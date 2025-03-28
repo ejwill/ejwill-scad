@@ -88,8 +88,7 @@ label_Color = "#ffffff"; //color
 //Adjust the length of the handle by percentage. 1 is 100%
 handle_length_adjust = 1; //[0.95:0.001:1.05]
 
-//Option to engraved the text into the handle
-engraved_text = false; //[false, true]
+//Label text raised, engraved, or flush
 text_style = "raised"; // [raised, engraved, flush]
 
 /*[Hidden]*/
