@@ -131,4 +131,4 @@ function backThicknessCalc(backThicknessRequested, mountingType) =
     mountingType == "GOEWS" ? 7 :
     mountingType == "Multipoint" ? 4.8 :
     mountingType == "Multiconnect" ? 6.5 : 
-    backThickenssRequested;
+    backThicknessRequested;
