@@ -51,9 +51,12 @@ isOffset = "No"; // [No, Right, Left]
 // Offset distance from the backer to the item holder
 offsetDistance = 0; // [0:0.1:500]
 
-/*[Slot Customization]*/
+/* [Slot Customization] */
+onRampHalfOffset = true;
 //Distance between Multiconnect slots on the back (25mm is standard for MultiBoard)
 distanceBetweenSlots = 25;
+//Reduce the number of slots
+subtractedSlots = 0;
 //QuickRelease removes the small indent in the top of the slots that lock the part into place
 slotQuickRelease = false;
 //Dimple scale tweaks the size of the dimple in the slot for printers that need a larger dimple to print correctly
@@ -65,7 +68,9 @@ slotDepthMicroadjustment = 0; //[-.5:0.05:.5]
 //enable a slot on-ramp for easy mounting of tall items
 onRampEnabled = true;
 //frequency of slots for on-ramp. 1 = every slot; 2 = every 2 slots; etc.
-onRampEveryXSlots = 1;
+On_Ramp_Every_X_Slots = 1;
+//Distance from the back of the item holder to where the multiconnect stops (i.e., where the dimple is) (by mm)
+Multiconnect_Stop_Distance_From_Back = 13;
 
 /* [Style Customizations] */
 //Edge rounding (in mm)
