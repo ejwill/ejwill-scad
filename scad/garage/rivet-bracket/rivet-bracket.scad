@@ -10,7 +10,6 @@ Credit to
     @SnazzyGreenWarrior on GitHub for their contributions on the Multipoint-compatible mount
     MrExo3D on Printables for the GOEWS system
 
-
 Using this module:
 This module is designed to create customizable mounting brackets compatible with popular mounting systems such as Multiconnect, Multipoint (Multiboard), and GOEWS.
 
@@ -19,6 +18,13 @@ Features:
 - Extensive customization options for rivet dimensions, backplate size, slot configurations, and offsets to suit various mounting needs.
 - Supports features like quick-release slots, on-ramps for easier mounting, and adjustments for printer tolerances.
 - Modular and adaptable design, making it suitable for a wide range of applications.
+
+Changelog:
+- v1.0: Initial version
+- v1.1: 
+    - Added support for rivets on the same side as the bracket
+    - refactored rivet loop
+    - code cleanup, optimization, and bug fixes
 */
 
 include <BOSL2/std.scad>
@@ -37,9 +43,11 @@ rivet_shaft_diameter = 7.5; // [0:0.1:50]
 // Height of the rivet shaft
 rivet_shaft_height = 3; // [0:0.1:50]
 //Distance between rivet heads. This is the distance between the middle of the rivet heads
-distance_between_rivets = 36.62; // [0:0.1:100]
+distance_between_rivets = 36.62; // [0:0.1:500]
 //Initial rivet distance from the top of the backplate
-initial_rivet_distance = 13.4; // [0:0.1:100]
+initial_rivet_distance = 13.4; // [0:0.1:500]
+//Place rivets on the same side as the bracket
+rivet_on_same_side = false; // [true, false]
 
 /* [Backing Customizations] */
 // Width of the backer
@@ -108,46 +116,47 @@ module offsetBacking(offsetDirection = "Right"){
 
 module makeBracket() {
     union() {
-        let(
-            backHeight = max(backHeight, 25),
-            initialRivetHeight = (-initial_rivet_distance - (rivet_head_height / 2)),
-            distance_between_rivets_test = distance_between_rivets - rivet_head_diameter,
-            rivetCount = floor((backHeight - abs(initialRivetHeight)) / (distance_between_rivets_test + (rivet_head_diameter/2)))) {
+        let(backHeight = max(backHeight, 25)) 
+        {
             echo ("backHeight: ", backHeight);
-            echo ("rivetCount: ", rivetCount);
-            echo ("initialRivetHeight: ", initialRivetHeight);
+            adj_rivet_y = rivet_on_same_side ? (total_rivet_height + adj_backThickness) : (total_rivet_height);
 
-            for (i = [0:1:rivetCount]) {
-            rotate([-90, 0, 0]) {
-                translate([
-                backWidth / 2, // Adjust rivet position based on offset
-                initialRivetHeight + i * -(distance_between_rivets_test + rivet_head_diameter), // adjust the rivets position vertically along the bracket
-                (total_rivet_height - 2) / 2 // Position rivets away from the backplate
-                ])
-                round_rivet();
+            if (!rivet_on_same_side) {
+                for (rivetHeight = [ initial_rivet_distance : (distance_between_rivets + rivet_head_diameter) : backHeight ]) {
+                    translate([
+                        backWidth/2,  // X: outside edge of backplate
+                        -(adj_backThickness + total_rivet_height),  // Y: behind the backplate
+                        rivetHeight - rivet_head_diameter  // Z: vertical position
+                    ])
+                    rotate([90, 0, 0])  // Make rivet face into backplate (shaft points in -Y)
+                        round_rivet();
+                }
             }
+            else {
+                for (rivetHeight = [ initial_rivet_distance : (distance_between_rivets + rivet_head_diameter): backHeight ]){
+                    rotate([ -90, 0, 0]) {
+                        translate([
+                            backWidth/2, // Adjust rivet position based on offset
+                            rivetHeight * ( -1), // adjust the rivets position vertically along the bracket
+                            total_rivet_height // adj_rivet_y // Position rivets away from the backplate
+                        ])
+                        round_rivet();
+                    }
+                }
             }
 
             // Adjust the backplate position based on the offset
-            translate([
-                (isOffset == "Right" ? offsetDistance : (isOffset == "Left" ? (-offsetDistance) : 0)),
-                (-total_rivet_height) / 2,
-                0
-            ])
+            translate([(isOffset == "Right" ? offsetDistance : (isOffset == "Left" ? (-offsetDistance) : 0)),0,0])
                 makebackPlate(backWidth = backWidth, backHeight = backHeight, distanceBetweenSlots = distanceBetweenSlots, Connection_Type = Connection_Type);
 
             // Add offset backings if needed
             if (isOffset == "Right") {
-                translate([0, (-total_rivet_height) / 2, 0])
-                    offsetBacking(isOffset);
+                offsetBacking(isOffset);
             } else if (isOffset == "Left") {
-                translate([0, (-total_rivet_height) / 2, 0])
-                    offsetBacking(isOffset);
+                offsetBacking(isOffset);
             }
         }
     }
 }
 
-rotate([180, 0, 0]) {
-    makeBracket();
-}
+makeBracket();
