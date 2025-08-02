@@ -1,0 +1,28 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "72",
+            "Connection_Type": "GOEWS",
+            "GOEWS_Cleat_Direction": "vertical",
+            "GOEWS_Cleat_custom_height_from_top_of_back": "11.24",
+            "GOEWS_Cleat_position": "normal",
+            "Multiconnect_Slot_Direction": "vertical",
+            "Multiconnect_Stop_Distance_From_Back": "13",
+            "Multipoint_Slot_Direction": "vertical",
+            "On_Ramp_Every_X_Slots": "1",
+            "backHeight": "125.66",
+            "backThicknessRequested": "4.5",
+            "backWidth": "40.299999999999997",
+            "customDistanceBetweenSlots": "25",
+            "dimpleScale": "1",
+            "multiConnectVersion": "v2",
+            "onRampEnabled": "true",
+            "onRampHalfOffset": "true",
+            "slotDepthMicroadjustment": "0",
+            "slotQuickRelease": "false",
+            "slotTolerance": "1",
+            "subtractedSlots": "4"
+        }
+    }
+}
