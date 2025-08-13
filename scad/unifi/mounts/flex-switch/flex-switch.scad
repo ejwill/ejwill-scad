@@ -13,7 +13,7 @@ Connection_Type = "Multiconnect - Multiboard"; // [Multipoint, Multiconnect - Mu
 backWidth = 40.3; // [0:0.5:500]
 // Height of the backer
 backHeight = 125.66; // [1:0.5:500]
-backThicknessRequested = 4.5; // [0:0.1:20]
+backThicknessRequested = 4.5; // [0:0.1:20] //4.5
 
 /* [Slot Customization] */
 multiConnectVersion = "v2"; // [v1, v2]
@@ -54,11 +54,16 @@ Multipoint_Slot_Direction = "vertical"; // [vertical, horizontal]
 
 /* [Screw Customization] */
 // Specification for the screw used in the mounting plate
-Screw_Specification = "M3,5"; // [M3,5, M4,8, M5,10]
+Screw_Specification = "M3.5"; // [M2: M2, M2.5:M2.5, M3: M3, M3.5: M3.5, M4: M4, M5: M5, M6: M6, M7: M7 - Special Case, M8: M8,  #4: #4, #6: #6, #8: #8, #10: #10, #12: #12, 1/4: 1/4, 5/16: 5/16]
 // Type of the screw head
 Screw_Head_Type = "flat"; // [flat, pan, round]
 // Whether to use a counterbore for the screw hole
 Screw_Counterbore = true; // [true, false] 
+// Shift the right screw hole position slightly
+Shift_Right_Screw_Hole = 0.0; // [-5:0.1:5] // Shift the screw hole position slightly
+// Shift the left screw hole position slightly
+Shift_Left_Screw_Hole = 0.0; // [-5:0.1:5] // Shift the screw hole position slightly
+
 
 
 /* [Hidden] */
@@ -90,15 +95,15 @@ module plate(includeTabs = true) {
                 // The base plate
                     cuboid([width, length, adj_backThickness], anchor=BOTTOM, rounding=edgeRounding);
                     // The screw hole, attached to the TOP of the plate
-                    translate([0, 42.5, adj_backThickness])
-                        screw_hole(Screw_Specification, head=Screw_Head_Type, counterbore=Screw_Counterbore, anchor=TOP);
-                    translate([0, -42.5, adj_backThickness])
-                        screw_hole(Screw_Specification, head=Screw_Head_Type, counterbore=Screw_Counterbore, anchor=TOP);
+                    translate([0, (42.5 + Shift_Right_Screw_Hole), adj_backThickness])
+                        screw_hole(Screw_Specification, head=Screw_Head_Type, counterbore=Screw_Counterbore, thread=false, l=adj_backThickness+0.2, anchor=TOP);
+                    translate([0, (-42.5 - Shift_Left_Screw_Hole), adj_backThickness])
+                        screw_hole(Screw_Specification, head=Screw_Head_Type, counterbore=Screw_Counterbore, thread=false, l=adj_backThickness+0.2, anchor=TOP);
                 }
             }
             else if (normalized_connection_type == "Multiconnect"){
                 if (Multiconnect_Slot_Direction == "vertical") {
-                    rotate([90, 0, 0])  translate([-backWidth/2, adj_backThickness, -backHeight/2]) {
+                    rotate([90, 0, 180])  translate([-backWidth/2, adj_backThickness, -backHeight/2]) {
                         makebackPlate(backWidth = backWidth, backHeight = backHeight, backThickness = adj_backThickness, distanceBetweenSlots = distanceBetweenSlots, Connection_Type = Connection_Type);
                     }
                 } 
@@ -110,7 +115,7 @@ module plate(includeTabs = true) {
             }
             else if (normalized_connection_type == "Multipoint") {
                 if (Multipoint_Slot_Direction == "vertical") {
-                    rotate([90, 0, 0])  translate([-backWidth/2, adj_backThickness, -backHeight/2]) {
+                    rotate([90, 0, 180])  translate([-backWidth/2, adj_backThickness, -backHeight/2]) {
                         makebackPlate(backWidth = backWidth, backHeight = backHeight, backThickness = adj_backThickness, distanceBetweenSlots = distanceBetweenSlots, Connection_Type = Connection_Type);
                     }
                 } 
@@ -168,7 +173,7 @@ module plate(includeTabs = true) {
 // look like a L shape with a tab on the end
 module tab(){
     tab_height = 3.4; // Height of the tab
-    tab_length = 8.3; // Length of the tab
+    tab_length = 8.5; // Length of the tab
     tab_width = 13;
     tab_stem_width = 5.5; // this is the with of the tab that isn't cut out
     tab_arm_thickness = 1.66; // Thickness of the tab arm
@@ -187,7 +192,7 @@ module tab(){
         }
         // locking dot - centered in the tab body
         translate([tab_length-1.8, 0, tab_height]) {
-            cylinder(h = 0.5, d = 1.4, $fn = 100);
+            cylinder(h = 0.8, d = 1.4, $fn = 100);
         }
     }
 
@@ -223,6 +228,7 @@ function normalizeConnectionType(connectionType) =
     connectionType == "Multiconnect - Custom Size" ? "Multiconnect" :
     connectionType == "GOEWS" ? "GOEWS" : 
     connectionType == "Command Strip" ? "Command Strip" : 
+    connectionType == "Screw" ? "Screw" :
     "Unknown";
 
 function distanceBetweenSlotsCalc(connectionType, customDistanceBetweenSlots) = 
