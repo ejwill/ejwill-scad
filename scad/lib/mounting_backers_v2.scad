@@ -67,10 +67,10 @@ Command_Strip_Slots = 1;
 Command_Strip_Distance_From_Top = 5;
 
 /* [Hidden] */
-// distanceBetweenSlots = 
-//     Connection_Type == "Multiconnect - openGrid" ? 28 :
-//     Connection_Type == "Multiconnect - Custom Size" ? customDistanceBetweenSlots :
-//     customDistanceBetweenSlots; //default for multipoint
+distanceBetweenSlots = 
+    Connection_Type == "Multiconnect - openGrid" ? 28 :
+    Connection_Type == "Multiconnect - Custom Size" ? customDistanceBetweenSlots :
+    customDistanceBetweenSlots; //default for multipoint
 
 // Connection_Standard = 
 //     Connection_Type == "Multipoint" ? "Multipoint" :
@@ -92,6 +92,7 @@ module makebackPlate(backWidth, backHeight, distanceBetweenSlots = 25, backThick
     let (
             backWidth = max(backWidth,distanceBetweenSlots), 
             backHeight = max(backHeight, 25),
+            distanceBetweenSlots = distanceBetweenSlotsCalc(Connection_Type, customDistanceBetweenSlots),
             slotCount = floor(backWidth/distanceBetweenSlots)- subtractedSlots,
             backThickness = backThicknessCalc(backThicknessRequested = backThickness, Connection_Type),
             normalized_connection_type = normalizeConnectionType(Connection_Type)
@@ -111,7 +112,7 @@ module makebackPlate(backWidth, backHeight, distanceBetweenSlots = 25, backThick
                             multiPointSlotTool(backHeight, onRampEveryXSlots);
                         }
                         if(normalized_connection_type == "Multiconnect"){
-                            multiConnectSlotToolv2(backHeight, onRampEveryXSlots);
+                            multiConnectSlotToolv2(backHeight, onRampEveryXSlots, distanceBetweenSlots);
                         }
                     }
                 }

@@ -37,7 +37,7 @@ module multiConnectSlotTool(totalHeight, onRampEveryXSlots = 1) {
     }
 }
 
-module multiConnectSlotToolv2(totalHeight, onRampEveryXSlots = 1) {
+module multiConnectSlotToolv2(totalHeight, onRampEveryXSlots = 1, distanceBetweenSlots=25) {
     scale(v = slotTolerance)
     //slot minus optional dimple with optional on-ramp
     let (slotProfile = [[0,0],[10.15,0],[10.15,1.2121],[7.65,3.712],[7.65,5],[0,5]])
