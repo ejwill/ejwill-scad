@@ -55,28 +55,27 @@ Connection_Type = "Multiconnect - Multiboard"; // [Multipoint, Multiconnect - Mu
 
 /* [Keyhole Peg] */
 // Head diameter (fits into keyhole round part)
-head_diameter=10; // [0:0.1:20]
+head_diameter=7.5; // [0:0.1:20]
 // Head height (length of the head)
-head_height=5; // [0:0.1:10]
+head_height=2.6; // [0:0.1:10]
 // Neck diameter (fits into slot)
-neck_diameter=5; // [0:0.1:10]
+neck_diameter=4; // [0:0.1:10]
 // Neck height (length of the neck)
 neck_height=3; // [0:0.1:10]
-// Flange diameter (stop for the peg)
-flange_diameter=12; // [0:0.1:20]
-// Flange thickness (thickness of the flange)
-flange_thickness=2; // [0:0.1:5]
 //Distance to place the peg from the edge of the mount. Y Axis
-distance_from_edge=20; // [0:0.1:150]
+distance_from_edge=37.5; // [0:0.1:150]
 //Distance to place the peg from the edge of the mount. X Axis
-distance_from_edge_x=20; // [0:0.1:150]
+distance_from_edge_x=35; // [0:0.1:150]
 //Number of pegs to use for the mount
-number_of_pegs=1; // [1:1:20]
+number_of_pegs=2; // [1:1:20]
 // Distance between pegs (for multi-peg mounts)
 distance_between_pegs=73.5; //[0:0.1:150]
+// Size of chamfer on the neck. Top and bottom
+chamfer_percent = 0.25; // [0:0.01:1]
 
 /* [Hidden] */
 $fn = 72;
+chamfer_size = neck_diameter * 0.25;
 
 module mount(orientation = "vertical"){
     let(
@@ -87,20 +86,30 @@ module mount(orientation = "vertical"){
     }
 }
 
-module keyhole_peg(head_d=10, head_h=3, neck_d=5, neck_h=8, flange_d=12, flange_t=2) {
+module keyhole_peg(head_d=10, neck_d=5, neck_h=8, head_h=3, flange_d=12, flange_t=2) {
     union() {
-        let(
-            peg_length = head_d + neck_h + flange_t // Calculate peg length based on dimensions
-        ){
-            translate([max(neck_d, flange_d)/2, 0, 0]){ // Center the peg
-            // Head (fits into keyhole round part)
-                translate([0, 0, peg_length-neck_h]){
-                    cylinder(d=head_d, h=head_h, $fn=48);
+        // Flange/stop (at base)
+        cylinder(d=flange_d, h=flange_t, $fn=48);
+        // Neck (on top of flange)
+        translate([0, 0, flange_t])
+            cylinder(d=neck_d, h=neck_h, $fn=32);
+        // Head (on top of neck)
+        translate([0, 0, flange_t + neck_h])
+            cylinder(d=head_d, h=head_h, $fn=48);
+    }
+}
+
+module keyhole_peg_chamfer(head_d=10, neck_d=5, neck_h=8, head_h=3, chamfer_size=1) {
+// Neck with outward flare at both ends
+// Neck geometry
+    cyl(d=neck_d, h=neck_h,
+        chamfer1=-chamfer_size,   // flare into mount
+        chamfer2=-chamfer_size,   // flare into head
+        $fn=32, anchor=BOTTOM){
+            position(TOP) {
+                cyl(d=head_d, h=head_h,
+                    $fn=48, anchor=BOTTOM);
                 }
-                cylinder(d=neck_d, h=peg_length-neck_h, $fn=32); // Neck (fits into slot)
-                cylinder(d=flange_d, h=flange_t, $fn=48);// Flange/stop
-            }
-        }
     }
 }
 
@@ -110,13 +119,20 @@ for(i = [0:number_of_pegs-1]) {
         -Width + distance_from_edge,
         0
     ])
-        keyhole_peg(
+        // keyhole_peg(
+        //     head_d=head_diameter,
+        //     head_h=head_height,
+        //     neck_d=neck_diameter,
+        //     neck_h=neck_height,
+        //     flange_d=flange_diameter,
+        //     flange_t=flange_thickness
+        // );
+        keyhole_peg_chamfer(
             head_d=head_diameter,
             head_h=head_height,
             neck_d=neck_diameter,
             neck_h=neck_height,
-            flange_d=flange_diameter,
-            flange_t=flange_thickness
+            chamfer_size=chamfer_size
         );
 }
 
