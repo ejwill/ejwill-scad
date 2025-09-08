@@ -22,27 +22,26 @@ Features:
 Changelog:
 - v1.0: Initial version
 - v1.1: Added customizable catch height and thickness options
+- v1.2: Migrated to mounting_backers_v2.scad for improved slot handling and added Multiconnect - openGrid and Multiconnect - Custom Size options
 */
 
 include <BOSL2/std.scad>
-include <../../lib/mounting_backers.scad>
+include <../../lib/mounting_backers_v2.scad>
 
 /*[Mounting]*/
-Connection_Type = "Multiconnect"; // [Multipoint, Multiconnect, GOEWS]
+Connection_Type = "Multiconnect - openGrid"; // [Multipoint, Multiconnect - Multiboard, Multiconnect - openGrid, Multiconnect - Custom Size, GOEWS]
 
 /* [Backing Customizations] */
 // Width of the backer
-backWidth = 25; // [0:0.5:500]
+back_width = 25; // [0:0.1:500]
 // Height of the backer
-backHeight = 56.3; // [1:0.1:500]
+backHeight = 56.0; // [1:0.1:500]
 
 /* [Catch Options] */
 // How long the catch should be
 catch_length = 5; // [0:0.1:50]
-// How hight the catch should be
-// catch_height = 4; // [0:0.1:50]
 // Catch Back wall thickness
-catch_back_thickness = 2; // [0:0.1:10]
+catch_back_thickness = 1.7; // [0:0.1:10]
 catch_floor_thickness = 1; // [0:0.1:20]
 // Catch Opening Height
 catch_opening_height = 2; // [0:0.1:50]
@@ -50,9 +49,10 @@ catch_opening_height = 2; // [0:0.1:50]
 catch_rounding = 2; // [0:0.1:10]
 
 /* [Slot Customization] */
+multiConnectVersion = "v2"; // [v1, v2]
 onRampHalfOffset = true;
 //Distance between Multiconnect slots on the back (25mm is standard for MultiBoard)
-distanceBetweenSlots = 25;
+customDistanceBetweenSlots = 25;
 //Reduce the number of slots
 subtractedSlots = 0;
 //QuickRelease removes the small indent in the top of the slots that lock the part into place
@@ -76,6 +76,8 @@ GOEWS_Cleat_custom_height_from_top_of_back = 11.24;
 
 /* [Hidden] */
 adj_backThickness = backThicknessCalc(backThicknessRequested = 0, Connection_Type);
+backWidth = max(back_width,distanceBetweenSlots);
+distanceBetweenSlots = distanceBetweenSlotsCalc(Connection_Type, customDistanceBetweenSlots);
 edgeRounding = 0;
 catch_height = catch_floor_thickness + catch_opening_height;
 
@@ -87,7 +89,6 @@ end_pos = (backHeight-catch_length)/2;
 CATCH_DEF = [catch_length,backWidth,catch_height];
 CATCH_POS = [-end_pos,0,-catch_height/2];
 CATCH_CUT_POS = [-end_pos + (catch_back_thickness/2), 0, 0];
-
 
 INVERT_X =[[-1,0,0],[0,1,0],[0,0,1]];
 INVERT_Y =[[1,0,0],[0,-1,0],[0,0,1]];
@@ -112,30 +113,13 @@ module handle() {
 
         // make cutout for the catches
         translate(CATCH_CUT_POS)
-        // rotate([90,0,0])
-        // translate([catch_back_thickness,0,0])
         color("red")
         cuboid([catch_length - catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
 
         translate(INVERT_X * CATCH_CUT_POS)
-        // rotate([90,0,0])
-        // translate([-catch_back_thickness,0,0])
         color("red")
         cuboid([catch_length - catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
     }
-
-    // make cutout for the catches
-        // translate(CATCH_CUT_POS)
-        // // rotate([90,0,0])
-        // translate([catch_back_thickness,0,0])
-        // color("red")
-        // cuboid([catch_length-catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
-
-        // translate(INVERT_X * CATCH_CUT_POS)
-        // // rotate([90,0,0])
-        // translate([-catch_back_thickness,0,0])
-        // color("red")
-        // cuboid([catch_length-catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
 }
 
 handle();
