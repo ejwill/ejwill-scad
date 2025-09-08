@@ -92,6 +92,8 @@ CATCH_CUT_POS = [-end_pos + (catch_back_thickness/2), 0, 0];
 INVERT_X =[[-1,0,0],[0,1,0],[0,0,1]];
 INVERT_Y =[[1,0,0],[0,-1,0],[0,0,1]];
 
+debug = false;
+
 $dl= 0.01;
 
 module handle() {
@@ -112,11 +114,9 @@ module handle() {
 
         // make cutout for the catches
         translate(CATCH_CUT_POS)
-        color("red")
         cuboid([catch_length - catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
 
         translate(INVERT_X * CATCH_CUT_POS)
-        color("red")
         cuboid([catch_length - catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
     }
 }
@@ -293,7 +293,10 @@ module multiConnectSlotToolv2(totalHeight, onRampEveryXSlots = 1, distanceBetwee
                 for(y = [1:onRampEveryXSlots:totalHeight/distanceBetweenSlots])
                     translate(v = [0,-5,-y*distanceBetweenSlots]) 
                         rotate(a = [-90,0,0]) 
-                            color(c = "orange") cylinder(h = 5, r1 = 12, r2 = 10.15);
+                            if (debug)
+                                color(c = "orange") cylinder(h = 5, r1 = 12, r2 = 10.15);
+                            else
+                                cylinder(h = 5, r1 = 12, r2 = 10.15);
         }
         //dimple
         if (slotQuickRelease == false && multiConnectVersion == "v1")
@@ -321,7 +324,10 @@ module multiconnectBack(backWidth, backHeight, distanceBetweenSlots, onRampEvery
             //Note: I kept doing math until it looked right. It's possible this can be simplified.
             for (slotNum = [0:1:slotCount-1]) {
                 translate(v = [distanceBetweenSlots/2+(backWidth/distanceBetweenSlots-slotCount)*distanceBetweenSlots/2+slotNum*distanceBetweenSlots,-2.35+slotDepthMicroadjustment,backHeight-13]) {
-                    color(c = "red")  slotTool(backHeight);
+                    if (debug)
+                        color(c = "red") slotTool(backHeight);
+                    else
+                        slotTool(backHeight);
                 }
             }
         }
