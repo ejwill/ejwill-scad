@@ -21,6 +21,7 @@ Features:
 
 Changelog:
 - v1.0: Initial version
+- v1.1: Added customizable catch height and thickness options
 */
 
 include <BOSL2/std.scad>
@@ -36,10 +37,17 @@ backWidth = 25; // [0:0.5:500]
 backHeight = 56.3; // [1:0.1:500]
 
 /* [Catch Options] */
-// How wide the catch should be
+// How long the catch should be
 catch_length = 5; // [0:0.1:50]
 // How hight the catch should be
-catch_height = 4; // [0:0.1:50]
+// catch_height = 4; // [0:0.1:50]
+// Catch Back wall thickness
+catch_back_thickness = 2; // [0:0.1:10]
+catch_floor_thickness = 1; // [0:0.1:20]
+// Catch Opening Height
+catch_opening_height = 2; // [0:0.1:50]
+// Catch rounding
+catch_rounding = 2; // [0:0.1:10]
 
 /* [Slot Customization] */
 onRampHalfOffset = true;
@@ -69,6 +77,7 @@ GOEWS_Cleat_custom_height_from_top_of_back = 11.24;
 /* [Hidden] */
 adj_backThickness = backThicknessCalc(backThicknessRequested = 0, Connection_Type);
 edgeRounding = 0;
+catch_height = catch_floor_thickness + catch_opening_height;
 
 BACKING_POS = [backHeight/2,-backWidth/2,-0];
 
@@ -77,7 +86,8 @@ end_pos = (backHeight-catch_length)/2;
 // create vectors for defining the catch and catch position
 CATCH_DEF = [catch_length,backWidth,catch_height];
 CATCH_POS = [-end_pos,0,-catch_height/2];
-CATCH_CUT_POS = [(-backHeight+catch_length)/2+1,0,-1];
+CATCH_CUT_POS = [-end_pos + (catch_back_thickness/2), 0, 0];
+
 
 INVERT_X =[[-1,0,0],[0,1,0],[0,0,1]];
 INVERT_Y =[[1,0,0],[0,-1,0],[0,0,1]];
@@ -88,11 +98,11 @@ module handle() {
     difference(){
         union(){
             translate(CATCH_POS)
-            cuboid(CATCH_DEF, anchor = CENTER, rounding=2,
+            cuboid(CATCH_DEF, anchor = CENTER, rounding=catch_rounding,
                 edges=[BOTTOM],$fn=24){};
         
             translate(INVERT_X * CATCH_POS)
-            cuboid(CATCH_DEF, anchor = CENTER, rounding=2,
+            cuboid(CATCH_DEF, anchor = CENTER, rounding=catch_rounding,
                 edges=[BOTTOM],$fn=24){};
 
             translate(BACKING_POS)
@@ -102,13 +112,30 @@ module handle() {
 
         // make cutout for the catches
         translate(CATCH_CUT_POS)
-        rotate([90,0,0])
-        cuboid([catch_length-2, 2, backWidth], anchor = CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
+        // rotate([90,0,0])
+        // translate([catch_back_thickness,0,0])
+        color("red")
+        cuboid([catch_length - catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
 
         translate(INVERT_X * CATCH_CUT_POS)
-        rotate([90,0,0])
-        cuboid([catch_length-2, 2, backWidth], anchor = CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
+        // rotate([90,0,0])
+        // translate([-catch_back_thickness,0,0])
+        color("red")
+        cuboid([catch_length - catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
     }
+
+    // make cutout for the catches
+        // translate(CATCH_CUT_POS)
+        // // rotate([90,0,0])
+        // translate([catch_back_thickness,0,0])
+        // color("red")
+        // cuboid([catch_length-catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
+
+        // translate(INVERT_X * CATCH_CUT_POS)
+        // // rotate([90,0,0])
+        // translate([-catch_back_thickness,0,0])
+        // color("red")
+        // cuboid([catch_length-catch_back_thickness, backWidth, catch_opening_height], anchor = TOP+CENTER, except_edges=[TOP+FRONT, TOP+BACK], $fn=20);
 }
 
 handle();

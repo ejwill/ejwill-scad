@@ -112,6 +112,7 @@ module makebackPlate(backWidth, backHeight, distanceBetweenSlots = 25, backThick
                             multiPointSlotTool(backHeight, onRampEveryXSlots);
                         }
                         if(normalized_connection_type == "Multiconnect"){
+                            echo("Multiconnect Slot Tool");
                             multiConnectSlotToolv2(backHeight, onRampEveryXSlots, distanceBetweenSlots);
                         }
                     }
@@ -157,11 +158,12 @@ module makebackPlate(backWidth, backHeight, distanceBetweenSlots = 25, backThick
 
 
 function backThicknessCalc(backThicknessRequested, mountingType) = 
+    let(normalizedType = normalizeConnectionType(mountingType))
     backThicknessRequested != 0 ? backThicknessRequested : 
-    mountingType == "GOEWS" ? 7 :
-    mountingType == "Multipoint" ? 4.8 :
-    mountingType == "Multiconnect" ? 6.5 : 
-    mountingType == "Command Strip" ? 3.5 : // Command Strip is thinner
+    normalizedType == "GOEWS" ? 7 :
+    normalizedType == "Multipoint" ? 4.8 :
+    normalizedType == "Multiconnect" ? 6.5 : 
+    normalizedType == "Command Strip" ? 3.5 : // Command Strip is thinner
     backThicknessRequested;
 
 function normalizeConnectionType(connectionType) = 
@@ -169,6 +171,7 @@ function normalizeConnectionType(connectionType) =
     connectionType == "Multiconnect - Multiboard" ? "Multiconnect" :
     connectionType == "Multiconnect - openGrid" ? "Multiconnect" :
     connectionType == "Multiconnect - Custom Size" ? "Multiconnect" :
+    connectionType == "Multiconnect" ? "Multiconnect" :
     connectionType == "GOEWS" ? "GOEWS" : 
     connectionType == "Command Strip" ? "Command Strip" : 
     "Unknown";
